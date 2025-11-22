@@ -9,7 +9,7 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Segoe Script', 'Brush Script MT', cursive; /* Elegant cursive fonts */
+  font-family: 'Segoe Script', 'Brush Script MT', cursive;
 }
 
 /* Heart canvas */
@@ -17,15 +17,17 @@ body, html {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-/* Text container with charming style */
+/* Text container */
 #textContainer {
   position: absolute;
   bottom: 15%;
   width: 100%;
   text-align: center;
-  font-size: 2.5rem; /* Slightly bigger for emphasis */
+  font-size: 2.5rem;
   color: #fff;
   font-weight: bold;
   line-height: 1.4;
@@ -33,13 +35,51 @@ body, html {
     0 0 5px #fff, 
     0 0 10px #ff69b4, 
     0 0 20px #ff1493, 
-    0 0 30px #ff69b4; /* Soft glowing romantic effect */
+    0 0 30px #ff69b4;
+  pointer-events: none;
+  user-select: none;
 }
 
+/* Responsive font scaling */
 @media (max-width: 768px) {
   #textContainer { font-size: 2rem; }
 }
-
 @media (max-width: 480px) {
   #textContainer { font-size: 1.5rem; }
+}
+
+/* Play Music button */
+#playMusicBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: rgba(255, 105, 180, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255,105,180,0.7);
+  transition: transform 0.2s, background-color 0.2s;
+  z-index: 10;
+}
+
+#playMusicBtn:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 105, 180, 1);
+}
+
+/* Responsive button scaling */
+@media (max-width: 768px) {
+  #playMusicBtn {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+}
+@media (max-width: 480px) {
+  #playMusicBtn {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
 }
