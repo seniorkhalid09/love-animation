@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For You ❤️</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    #textContainer {
+      position: absolute;
+      bottom: 10%;
+      width: 90%;
+      text-align: center;
+      font-size: 4vw;
+      color: #fff;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" src="love.mp3" autoplay loop></audio>
+  <canvas id="heartCanvas"></canvas>
+  <div id="textContainer"></div>
+
+  <script>
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let centerX = window.innerWidth / 2;
+    let centerY = window.innerHeight / 2.2;
+    let scale = Math.min(window.innerWidth, window.innerHeight) / 40;
+    let t = 0;
+    let fillAlpha = 0;
+    let pulse = 1;
+
+    const startColor = {r: 255, g: 0, b: 0};      // Red
+    const endColor = {r: 255, g: 105, b: 180};    // Pink
+
+    function getCurrentHeartColor(alpha){
+      const r = Math.floor(startColor.r + (endColor.r - startColor.r) * (alpha / 0.4));
+      const g = Math.floor(startColor.g + (endColor.g - startColor.g) * (alpha / 0.4));
+      const b = Math.floor(startColor.b + (endColor.b - startColor.b) * (alpha / 0.4));
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      centerX = canvas.width / 2;
+      centerY = canvas.height / 2.2;
+      scale = Math.min(canvas.width, canvas.height) / 40;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const sparkles = [];
+    const floatingHearts = [];
+    for(let i=0;i<100;i++) {
+      sparkles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*2+1, dx: (Math.random()-0.5)/2, dy: (Math.random()-0.5)/2});
+      floatingHearts.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*10+5, dy: Math.random()*1+0.5});
+    }
+
+    function drawSparklesAndHearts() {
+      sparkles.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.fill();
+        s.x += s.dx;
+        s.y += s.dy;
+        if(s.x<0||s.x>canvas.width) s.dx*=-1;
+        if(s.y<0||s.y>canvas.height) s.dy*=-1;
+      });
+      floatingHearts.forEach(f => {
+        ctx.beginPath();
+        ctx.moveTo(f.x, f.y);
+        ctx.arc(f.x, f.y, f.size/2, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,105,180,0.5)';
+        ctx.fill();
+        f.y -= f.dy;
+        if(f.y < -f.size) f.y = canvas.height + f.size;
+      });
+    }
+
+    const messages = [
+    "Hey Ayesha 🌸, it’s Khalid… I couldn’t wait to tell you something ❤️",
+    "Every time I see your smile, my heart does a little happy dance 💃💖",
+    "I think about you all the time… and I love how amazing you are 💕",
+    "I hope this little surprise makes you feel as special as you truly are 😘",
+    "I can’t stop smiling thinking about the moments we could share together 🌹💖"
+    ];
+
+
+    const textContainer = document.getElementById('textContainer');
+    let messageIndex = 0;
+    let charIndex = 0;
+
+    function typeNextChar() {
+      if(charIndex < messages[messageIndex].length){
+        textContainer.textContent += messages[messageIndex][charIndex];
+        charIndex++;
+        setTimeout(typeNextChar, 120);
+      } else {
+        messageIndex++;
+        if(messageIndex < messages.length){
+          setTimeout(()=>{
+            textContainer.textContent = '';
+            charIndex = 0;
+            typeNextChar();
+          }, 1200);
+        }
+      }
+    }
+
+    function drawHeart(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSparklesAndHearts();
+
+      pulse = 1 + 0.05*Math.sin(Date.now()/200);
+      const glowAlpha = 0.3 + 0.1*Math.sin(Date.now()/100);
+
+      ctx.shadowBlur = 20;
+      ctx.shadowColor = `rgba(255,105,180,${glowAlpha})`;
+
+      ctx.beginPath();
+      for (let i = 0; i <= t; i += 0.01) {
+        const x = 16 * Math.sin(i) ** 3 * scale * pulse;
+        const y = -(13 * Math.cos(i) - 5 * Math.cos(2*i) - 2*Math.cos(3*i) - Math.cos(4*i)) * scale * pulse;
+        if(i===0) ctx.moveTo(centerX + x, centerY + y);
+        else ctx.lineTo(centerX + x, centerY + y);
+      }
+      ctx.strokeStyle = `rgba(255,255,255,1)`;
+      ctx.lineWidth = scale / 4;
+      ctx.stroke();
+
+      if(t >= 2*Math.PI && fillAlpha < 0.4){
+        fillAlpha += 0.005;
+        ctx.fillStyle = getCurrentHeartColor(fillAlpha);
+        ctx.fill();
+      }
+
+      t += 0.02;
+      if(t < 2*Math.PI || fillAlpha < 0.4){
+        requestAnimationFrame(drawHeart);
+      } else if(messageIndex===0){
+        typeNextChar();
+      } else {
+        requestAnimationFrame(drawHeart);
+      }
+    }
+
+    drawHeart();
+  </script>
+</body>
+</html>
